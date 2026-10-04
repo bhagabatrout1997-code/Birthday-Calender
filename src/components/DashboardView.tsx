@@ -17,7 +17,7 @@ import {
   ChevronRight
 } from 'lucide-react';
 import { Birthday, UserProfile, ActivityLogItem } from '../types';
-import { calculateBirthdayStats, parseBirthDate, MONTH_NAMES, ZODIAC_SIGNS } from '../utils/dateUtils';
+import { calculateBirthdayStats, parseBirthDate, MONTH_NAMES, getZodiacSign } from '../utils/dateUtils';
 
 interface DashboardViewProps {
   user: UserProfile;
@@ -93,22 +93,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   // Current active zodiac sign
   const currentMonth = today.getMonth() + 1;
   const currentDay = today.getDate();
-  const currentZodiac = ZODIAC_SIGNS.find(z => {
-    const s = calculateBirthdayStats({
-      id: 'z-check',
-      name: 'Check',
-      birthDate: `1990-${String(currentMonth).padStart(2, '0')}-${String(currentDay).padStart(2, '0')}`,
-      birthYearKnown: false,
-      relationship: 'Friend',
-      avatarColor: '',
-      interests: [],
-      remindDaysBefore: [],
-      savedGifts: [],
-      pastGifts: [],
-      createdAt: '',
-    });
-    return s.zodiac.name === z.name;
-  }) || ZODIAC_SIGNS[9]; // Libra default for early October
+  const currentZodiac = getZodiacSign(currentMonth, currentDay);
 
   return (
     <div className="space-y-8 animate-in fade-in duration-200">
