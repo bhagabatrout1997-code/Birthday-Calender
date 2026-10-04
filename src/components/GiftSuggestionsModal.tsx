@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { Birthday, SavedGiftIdea, GiftStatus } from '../types';
 import { calculateBirthdayStats } from '../utils/dateUtils';
+import { generateCuratedGiftSuggestions } from '../utils/giftCurator';
 
 interface GiftSuggestionsModalProps {
   birthday: Birthday;
@@ -83,12 +84,26 @@ export const GiftSuggestionsModal: React.FC<GiftSuggestionsModalProps> = ({
         }),
       });
 
+      if (!response.ok) {
+        throw new Error(`Server returned ${response.status}`);
+      }
+
       const data = await response.json();
       if (data.suggestions && Array.isArray(data.suggestions)) {
         setGeneratedSuggestions(data.suggestions);
+        return;
       }
     } catch (err) {
-      console.error('Failed to load gift suggestions:', err);
+      // Graceful fallback for static hosting like GitHub Pages where /api/ endpoints do not exist
+      const localCurated = generateCuratedGiftSuggestions({
+        name: birthday.name,
+        relationship: birthday.relationship,
+        age: stats.ageTurning || stats.currentAge,
+        interests: interestTags,
+        budget,
+        vibe,
+      });
+      setGeneratedSuggestions(localCurated);
     } finally {
       setLoading(false);
     }

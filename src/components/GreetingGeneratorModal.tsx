@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { Birthday } from '../types';
 import { calculateBirthdayStats } from '../utils/dateUtils';
+import { generateCuratedGreetings } from '../utils/greetingsCurator';
 
 interface GreetingGeneratorModalProps {
   birthday: Birthday;
@@ -55,12 +56,25 @@ export const GreetingGeneratorModal: React.FC<GreetingGeneratorModalProps> = ({
         }),
       });
 
+      if (!response.ok) {
+        throw new Error(`Server returned ${response.status}`);
+      }
+
       const data = await response.json();
       if (data.greetings && Array.isArray(data.greetings)) {
         setGreetings(data.greetings);
+        return;
       }
     } catch (err) {
-      console.error('Error fetching greetings:', err);
+      // Graceful fallback for static hosting like GitHub Pages
+      const localGreetings = generateCuratedGreetings({
+        name: birthday.name,
+        relationship: birthday.relationship,
+        ageTurning: stats.ageTurning,
+        tone,
+        customNote: customMemory || birthday.notes,
+      });
+      setGreetings(localGreetings);
     } finally {
       setLoading(false);
     }
