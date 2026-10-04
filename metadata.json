@@ -1,0 +1,7 @@
+{
+  "name": "Celebrately - Birthday Tracker & Gift Planner",
+  "description": "Never miss a birthday with customizable notification reminders, countdowns, zodiac tracking, smart gift suggestions, and greeting card generator.",
+  "requestFramePermissions": ["notifications"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+
